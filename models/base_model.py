@@ -24,7 +24,7 @@ class BaseModel:
             self.created_at = datetime.fromisoformat(kwargs['created_at'])
             self.updated_at = datetime.fromisoformat(kwargs['updated_at'])
             for key in kwargs.keys():
-                if not key in ('__class__', 'created_at', 'updated_at'):
+                if key not in ('__class__', 'created_at', 'updated_at'):
                     setattr(self, key, kwargs[key])
         else:
             self.id = str(uuid4())
@@ -54,6 +54,6 @@ class BaseModel:
         keys_values['created_at'] = self.created_at.isoformat()
         keys_values['updated_at'] = self.updated_at.isoformat()
         for key, value in self.__dict__.items():
-            if not key in keys_values.keys():
+            if key not in keys_values.keys():
                 keys_values[key] = value
         return keys_values

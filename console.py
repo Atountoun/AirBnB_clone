@@ -273,14 +273,14 @@ class HBNBCommand(cmd.Cmd):
         else:
             instance_obj = Review(**instance)
         instance_obj.save()
-    
+
     def do_count(self, arg):
         """Retrieve the number of instances of a class
         Format: count <class name>
         """
         if not arg:
             print("** class name missing **")
-            return 
+            return
         classes = [
                 "BaseModel", "User", "Place", "State",
                 "City", "Amenity", "Review"
@@ -300,7 +300,7 @@ class HBNBCommand(cmd.Cmd):
         """Hook method executed just before the command line is interpreted,
         but after the input prompt is generated and issued.
         """
-        custom_cmd = ["User", "State", "City", "Place", "Amenity", "Review"]
+        custom_cmd = ["BaseModel", "User", "State", "City", "Place", "Amenity", "Review"]
         class_name = line.split('.')[0]
         if class_name in custom_cmd:
             right_of_line = line.split('.')[1]

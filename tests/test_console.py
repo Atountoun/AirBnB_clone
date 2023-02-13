@@ -46,7 +46,7 @@ class TestConsole(TestCase):
             out = list(set(out_list))
             self.assertEqual(len(out), 1)
             self.assertEqual(out[0], "** no instance found **")
-    
+
     @skip("generate too much data, need to be mocked")
     def test_create(self):
         with patch('sys.stdout', new=StringIO()) as f:
@@ -55,18 +55,17 @@ class TestConsole(TestCase):
             self.assertEqual(out, "** class name missing **")
             f.truncate(0)
             f.seek(0)
-            #self.cmd_line.onecmd("create BaseModel")
-            #self.cmd_line.onecmd("create User")
-            #self.cmd_line.onecmd("create Place")
-            #self.cmd_line.onecmd("create State")
-            #self.cmd_line.onecmd("create City")
-            #self.cmd_line.onecmd("Create Review")
-            #self.cmd_line.onecmd("create Amenity")
-            #out_list = f.getvalue().strip().split('\n')
-            #out = list(set(out_list))
-            #self.assertEqual(len(out), 1)
-            #self.assertEqual(out[0], "** instance id missing **")
-
+            # self.cmd_line.onecmd("create BaseModel")
+            # self.cmd_line.onecmd("create User")
+            # self.cmd_line.onecmd("create Place")
+            # self.cmd_line.onecmd("create State")
+            # self.cmd_line.onecmd("create City")
+            # self.cmd_line.onecmd("Create Review")
+            # self.cmd_line.onecmd("create Amenity")
+            # out_list = f.getvalue().strip().split('\n')
+            # out = list(set(out_list))
+            # self.assertEqual(len(out), 1)
+            # self.assertEqual(out[0], "** instance id missing **")
 
     def test_update(self):
         with patch('sys.stdout', new=StringIO()) as f:
