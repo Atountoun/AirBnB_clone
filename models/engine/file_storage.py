@@ -73,6 +73,5 @@ class FileStorage:
             with open(path, 'r') as fd:
                 data = json.load(fd)
                 for key in data.keys():
-                    FileStorage.__objects[key] = classes[data[key]["__class__"]](
-                            **data[key]
-                            )
+                    FileStorage.__objects[key] = classes[
+                            data[key]["__class__"]](**data[key])

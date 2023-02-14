@@ -130,7 +130,9 @@ class HBNBCommand(cmd.Cmd):
                 return
             for obj in objects.values():
                 if obj.to_dict()["__class__"] == class_name:
-                    instance = classes[obj.to_dict()["__class__"]](**obj.to_dict())
+                    instance = classes[obj.to_dict()["__class__"]](
+                            **obj.to_dict()
+                            )
                     instances.append(str(instance))
         else:
             for obj in objects.values():
