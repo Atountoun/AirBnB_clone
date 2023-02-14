@@ -15,6 +15,16 @@ from models.review import Review
 from models import storage
 import re
 
+classes = {
+        "BaseModel": BaseModel,
+        "User": User,
+        "Place": Place,
+        "State": State,
+        "City": City,
+        "Amenity": Amenity,
+        "Review": Review
+        }
+
 
 class HBNBCommand(cmd.Cmd):
     """The class that represents the entry point of the command
@@ -35,27 +45,10 @@ class HBNBCommand(cmd.Cmd):
         if not class_name:
             print("** class name missing **")
             return
-        classes = [
-                "BaseModel", "User", "Place", "State",
-                "City", "Amenity", "Review"
-                ]
         if class_name not in classes:
             print("** class doesn't exist **")
             return
-        if class_name == "BaseModel":
-            instance = BaseModel()
-        elif class_name == "User":
-            instance = User()
-        elif class_name == "Place":
-            instance = Place()
-        elif class_name == "State":
-            instance = State()
-        elif class_name == "City":
-            instance = City()
-        elif class_name == "Amenity":
-            instance = Amenity()
-        else:
-            instance = Review()
+        instance = classes[class_name]()
         instance.save()
         print(instance.id)
 
@@ -69,10 +62,6 @@ class HBNBCommand(cmd.Cmd):
             return
         args = arg.strip().split(" ")
         class_name = args[0]
-        classes = [
-                "BaseModel", "User", "Place", "State",
-                "City", "Amenity", "Review"
-                ]
         if class_name not in classes:
             print("** class doesn't exist **")
             return
@@ -88,26 +77,13 @@ class HBNBCommand(cmd.Cmd):
             instance_id = instance_id[1:-1]
         object_id = class_name + "." + instance_id
         try:
-            instance_dict = objects[object_id]
+            instance_dict = objects[object_id].to_dict()
         except Exception:
             instance_dict = None
         if not instance_dict:
             print("** no instance found **")
             return
-        if class_name == "BaseModel":
-            instance = BaseModel(**instance_dict)
-        elif class_name == "User":
-            instance = User(**instance_dict)
-        elif class_name == "Place":
-            instance = Place(**instance_dict)
-        elif class_name == "State":
-            instance = State(**instance_dict)
-        elif class_name == "City":
-            instance = City(**instance_dict)
-        elif class_name == "Amenity":
-            instance = Amenity(**instance_dict)
-        else:
-            instance = Review(**instance_dict)
+        instance = classes[class_name](**instance_dict)
         print(instance)
 
     def do_destroy(self, arg):
@@ -120,10 +96,6 @@ class HBNBCommand(cmd.Cmd):
             return
         args = arg.strip().split(" ")
         class_name = args[0]
-        classes = [
-                "BaseModel", "User", "Place", "State",
-                "City", "Amenity", "Review"
-                ]
         if class_name not in classes:
             print("** class doesn't exist **")
             return
@@ -150,10 +122,6 @@ class HBNBCommand(cmd.Cmd):
         Format: all <class name>; all
         """
         class_name = arg
-        classes = [
-                "BaseModel", "User", "Place", "State",
-                "City", "Amenity", "Review"
-                ]
         instances = []
         objects = self.get_data()
         if class_name:
@@ -161,37 +129,13 @@ class HBNBCommand(cmd.Cmd):
                 print("** class doesn't exist **")
                 return
             for obj in objects.values():
-                if obj["__class__"] == class_name:
-                    if obj["__class__"] == "BaseModel":
-                        instances.append(str(BaseModel(**obj)))
-                    elif obj["__class__"] == "User":
-                        instances.append(str(User(**obj)))
-                    elif obj["__class__"] == "Place":
-                        instances.append(str(Place(**obj)))
-                    elif obj["__class__"] == "State":
-                        instances.append(str(State(**obj)))
-                    elif obj["__class__"] == "City":
-                        instances.append(str(City(**obj)))
-                    elif obj["__class__"] == "Amenity":
-                        instances.append(str(Amenity(**obj)))
-                    elif obj["__class__"] == "Review":
-                        instances.append(str(Review(**obj)))
+                if obj.to_dict()["__class__"] == class_name:
+                    instance = classes[obj.to_dict()["__class__"]](**obj.to_dict())
+                    instances.append(str(instance))
         else:
             for obj in objects.values():
-                if obj["__class__"] == "BaseModel":
-                    instances.append(str(BaseModel(**obj)))
-                elif obj["__class__"] == "User":
-                    instances.append(str(User(**obj)))
-                elif obj["__class__"] == "Place":
-                    instances.append(str(Place(**obj)))
-                elif obj["__class__"] == "State":
-                    instances.append(str(State(**obj)))
-                elif obj["__class__"] == "City":
-                    instances.append(str(City(**obj)))
-                elif obj["__class__"] == "Amenity":
-                    instances.append(str(Amenity(**obj)))
-                elif obj["__class__"] == "Review":
-                    instances.append(str(Review(**obj)))
+                instance = classes[obj.to_dict()["__class__"]](**obj.to_dict())
+                instances.append(str(instance))
         print(instances)
 
     def do_update(self, arg):
@@ -205,10 +149,6 @@ class HBNBCommand(cmd.Cmd):
         arg = arg.replace(',', ' ')
         args_list = arg.split()
         class_name = args_list[0]
-        classes = [
-                "BaseModel", "User", "Place", "State",
-                "City", "Amenity", "Review"
-                ]
         if class_name not in classes:
             print("** class doesn't exist **")
             return
@@ -220,14 +160,13 @@ class HBNBCommand(cmd.Cmd):
         objects = self.get_data()
         if instance_id.startswith('"') and instance_id.endswith('"'):
             instance_id = instance_id[1:-1]
-        print("instance to update ", class_name, instance_id)
         object_id = class_name + "." + instance_id
         if object_id not in objects.keys():
             print("** no instance found **")
             return
-        instance = objects[object_id]
+        instance = objects[object_id].to_dict()
         try:
-            attribute_name = args_list[2]
+            attribute_name = args_list[2].replace('"', '')
             no_update_permit = ["id", "created_at", "updated_at"]
             if attribute_name in no_update_permit:
                 raise Error("can't update this attribute")
@@ -257,21 +196,9 @@ class HBNBCommand(cmd.Cmd):
             except Exception:
                 print("** invalid type **")
                 return
+        attribute_name = attribute_name.strip()
         instance[attribute_name] = attribute_value
-        if class_name == "BaseModel":
-            instance_obj = BaseModel(**instance)
-        elif class_name == "User":
-            instance_obj = User(**instance)
-        elif class_name == "Place":
-            instance_obj = Place(**instance)
-        elif class_name == "State":
-            instance_obj = State(**instance)
-        elif class_name == "City":
-            instance_obj = City(**instance)
-        elif class_name == "Amenity":
-            instance_obj = Amenity(**instance)
-        else:
-            instance_obj = Review(**instance)
+        instance_obj = classes[class_name](**instance)
         instance_obj.save()
 
     def do_count(self, arg):
@@ -281,10 +208,6 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print("** class name missing **")
             return
-        classes = [
-                "BaseModel", "User", "Place", "State",
-                "City", "Amenity", "Review"
-                ]
         class_name = arg.split()[0]
         if class_name not in classes:
             print("** class doesn't exist **")
@@ -292,7 +215,7 @@ class HBNBCommand(cmd.Cmd):
         objects = self.get_data()
         number_of_instances = 0
         for obj in objects.values():
-            if obj["__class__"] == class_name:
+            if obj.to_dict()["__class__"] == class_name:
                 number_of_instances += 1
         print(number_of_instances)
 
@@ -300,9 +223,8 @@ class HBNBCommand(cmd.Cmd):
         """Hook method executed just before the command line is interpreted,
         but after the input prompt is generated and issued.
         """
-        custom_cmd = ["BaseModel", "User", "State", "City", "Place", "Amenity", "Review"]
         class_name = line.split('.')[0]
-        if class_name in custom_cmd:
+        if class_name in classes:
             right_of_line = line.split('.')[1]
             cmd = re.split(r"\)|\(", right_of_line)[0]
             args = " ".join(re.split(r"\)|\(", right_of_line)[1:-1])

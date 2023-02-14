@@ -4,7 +4,6 @@ the parent class of others models.
 """
 from uuid import uuid4
 from datetime import datetime
-from models import storage
 
 
 class BaseModel:
@@ -20,6 +19,7 @@ class BaseModel:
             args: a variable length of non-keyworded arguments
             kwargs: a variable length of keyworded arguments
         """
+        from models import storage
         if kwargs and kwargs != {}:
             self.created_at = datetime.fromisoformat(kwargs['created_at'])
             self.updated_at = datetime.fromisoformat(kwargs['updated_at'])
@@ -43,8 +43,10 @@ class BaseModel:
         """This method updates the public instance attribute updated_at with
         the current datetime.
         """
-        storage.save()
+        from models import storage
         self.updated_at = datetime.now()
+        storage.new(self)
+        storage.save()
 
     def to_dict(self):
         """Convert the class to a dictionary with its attributes.
