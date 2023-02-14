@@ -18,6 +18,32 @@ class TestConsole(TestCase):
     def setUp(self):
         self.cmd_line = HBNBCommand()
 
+    def test_quit(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.cmd_line.onecmd("quit")
+            out = f.getvalue().strip()
+            self.assertEqual(out, "")
+
+    def test_EOF(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.cmd_line.onecmd("EOF")
+            out = f.getvalue().strip()
+            self.assertEqual(out, "")
+
+    def test_help(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.cmd_line.onecmd("help count")
+            out = f.getvalue().strip()
+            expected = "\n\tRetrieve the number of instances of a class \
+                    \n\tFormat: count <class name>, <class name>.count()"
+            self.assertEqual(out, expected)
+
+    def test_empty_line(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.cmd_line.onecmd("")
+            out = f.getvalue().strip()
+            self.assertEqual(out, "")
+
     def test_show(self):
         with patch('sys.stdout', new=StringIO()) as f:
             self.cmd_line.onecmd("show")
@@ -47,7 +73,7 @@ class TestConsole(TestCase):
             self.assertEqual(len(out), 1)
             self.assertEqual(out[0], "** no instance found **")
 
-    @skip("generate too much data, need to be mocked")
+    @skip("")
     def test_create(self):
         with patch('sys.stdout', new=StringIO()) as f:
             self.cmd_line.onecmd('create')
@@ -56,16 +82,15 @@ class TestConsole(TestCase):
             f.truncate(0)
             f.seek(0)
             # self.cmd_line.onecmd("create BaseModel")
-            # self.cmd_line.onecmd("create User")
-            # self.cmd_line.onecmd("create Place")
+            self.cmd_line.onecmd("create User")
+            self.cmd_line.onecmd("create Place")
             # self.cmd_line.onecmd("create State")
             # self.cmd_line.onecmd("create City")
             # self.cmd_line.onecmd("Create Review")
             # self.cmd_line.onecmd("create Amenity")
-            # out_list = f.getvalue().strip().split('\n')
-            # out = list(set(out_list))
-            # self.assertEqual(len(out), 1)
-            # self.assertEqual(out[0], "** instance id missing **")
+            out_list = f.getvalue().strip().split('\n')
+            out = list(set(out_list))
+            self.assertEqual(len(out), 2)
 
     def test_update(self):
         with patch('sys.stdout', new=StringIO()) as f:
@@ -83,7 +108,6 @@ class TestConsole(TestCase):
             self.cmd_line.onecmd("update Amenity")
             out_list = f.getvalue().strip().split('\n')
             out = list(set(out_list))
-            print(out)
             self.assertEqual(len(out), 1)
             self.assertEqual(out[0], "** instance id missing **")
 

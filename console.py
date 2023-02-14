@@ -204,8 +204,9 @@ class HBNBCommand(cmd.Cmd):
         instance_obj.save()
 
     def do_count(self, arg):
-        """Retrieve the number of instances of a class
-        Format: count <class name>
+        """
+        Retrieve the number of instances of a class
+        Format: count <class name>, <class name>.count()
         """
         if not arg:
             print("** class name missing **")
